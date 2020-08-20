@@ -1,23 +1,27 @@
 {
-    "name": "CoVnected",
-    "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
-    "scripts": {
-      "start":"node app/controller/app.js",
-      "dev":"nodemon app/controller/app.js"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "dependencies": {
-      "cors": "^2.8.5",
-      "express": "^4.17.1",
-      "helmet": "^4.1.0",
-      "morgan": "^1.10.0",
-      "pg": "^8.3.2"
-    },
-    "devDependencies": {
-      "nodemon": "^2.0.4"
-    }
+  "name": "tested",
+  "version": "1.0.0",
+  "description": "Welcome to Connected - Covid.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon app/controller/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zeke-D/Tested.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Zeke-D/Tested/issues"
+  },
+  "homepage": "https://github.com/Zeke-D/Tested#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "helmet": "^4.1.0",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.4",
+    "pg": "^8.3.2"
   }
+}
