@@ -1,0 +1,23 @@
+{
+    "name": "CoVnected",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+      "start":"node app/controller/app.js",
+      "dev":"nodemon app/controller/app.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+      "cors": "^2.8.5",
+      "express": "^4.17.1",
+      "helmet": "^4.1.0",
+      "morgan": "^1.10.0",
+      "pg": "^8.3.2"
+    },
+    "devDependencies": {
+      "nodemon": "^2.0.4"
+    }
+  }
