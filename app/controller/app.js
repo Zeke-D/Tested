@@ -2,7 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
-const api_v1 = require('./API/v1/routes.js')
+const api_v1 = require('./API/v1/routes.js');
 
 const app = express();
 // setup middleware
