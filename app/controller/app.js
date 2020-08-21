@@ -9,6 +9,7 @@ const app = express();
 // setup middleware
 app.use(morgan('common'));
 app.use(helmet());
+app.use(express.json())
 app.use(cors({
     origin: 'http://localhost:3000'
 }));
