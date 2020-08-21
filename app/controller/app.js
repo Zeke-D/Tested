@@ -3,6 +3,7 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
 const api_v1 = require('./API/v1/routes.js');
+require('dotenv').config()
 
 const app = express();
 // setup middleware
