@@ -38,6 +38,9 @@ router.post('/', async (req, res, next) => {
 
 
 // delete one user
+router.delete('/', async (req, res, next) => {
+    //TODO add delete user route
+})
 
 
 module.exports = router;
