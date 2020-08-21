@@ -2,6 +2,7 @@ const express = require('express');
 const { db, errorHandlerCreator } = require('../../../model/db/db.js');
 const router = express.Router();
 const loginAuth = require('./loginAuth');
+const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 
 // CRUD for users
@@ -28,13 +29,23 @@ router.get('/:id', async (req, res, next) => {
 // create one user
 router.post('/', async (req, res, next) => {
 
-    const { firstName, lastName, email, phone } = req.body
-    const password = await loginAuth(req.body.password)
+    let { firstName, lastName, email, phone, password } = req.body.user;
+    password = await loginAuth(password);
+
+    const resHandler = (response, query_result) => {
+        response.json({
+            message: "User succesfully added."
+        });
+    };
 
     //query that adds user to db
     //error handler is fired off but data still gets entered into db... very weird
-    await db.query('INSERT INTO users (first_name, last_name, email, phone, password) VALUES ($1, $2, $3, $4, $5)',
-   [firstName, lastName, email, phone, password], errorHandlerCreator(res, next));
+    await db.query(
+        'INSERT INTO users (first_name, last_name, email, phone, password)\
+        VALUES ($1, $2, $3, $4, $5)',
+        [firstName, lastName, email, phone, password],
+        errorHandlerCreator(resHandler, req, res, next)
+    );
 });
 
 // update one user
