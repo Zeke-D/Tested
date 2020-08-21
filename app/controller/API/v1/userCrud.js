@@ -32,9 +32,7 @@ router.post('/', async (req, res) => {
             password
         }
     } = req;
-
-
-
+   
 });
 
 // update one user
