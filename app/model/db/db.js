@@ -1,27 +1,33 @@
 const { Pool } = require('pg')
 const pool = new Pool({
-    host: process.env.PGHOST,
-    port: process.env.PGPORT,
-    database: process.env.PGDATABASE,
-    user: process.env.PGUSER,
-    password: process.env.PGPASSWORD,
+    host:       process.env.PGHOST,
+    port:       process.env.PGPORT,
+    database:   process.env.PGDATABASE,
+    user:       process.env.PGUSER,
+    password:   process.env.PGPASSWORD,
     max: 20,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000,
 })
 
-function pgErrorHandlerCreator(res, next) {
+// takes in:
+//      - responseHandler (which performs actions on the res object based on the query result)
+//      - res (response object)
+//      - next
+function pgErrorHandlerCreator(responseHandler, req, res, next) {
     return (error, query_result) => {
         if (error) {
             res.status(422);
             next(error);
         }
-        else if (query_result.rows.length === 0) {
+        else if (req.method == "GET" && query_result.rows.length === 0) {
+            console.log(query_result);
             res.status(404);
             next({message: "No entries found"});
         }
         else {
-            res.json({user: query_result});
+            // if we've gotten a response and no errors, we proceed to handle the response
+            responseHandler(res, query_result);
         }
     }
 }

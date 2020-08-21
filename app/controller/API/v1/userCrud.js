@@ -2,8 +2,7 @@ const express = require('express');
 const { db, errorHandlerCreator } = require('../../../model/db/db.js');
 const router = express.Router();
 const loginAuth = require('./loginAuth');
-
-
+const jsonParser = bodyParser.json();
 
 // CRUD for users
 
@@ -11,15 +10,19 @@ const loginAuth = require('./loginAuth');
 router.get('/', async (req, res) => {
     const query_res = await db.query('SELECT * from users');
     res.json({
-        user:query_res
+        users: query_res.rows
     });
 });
 
 // read one user
 router.get('/:id', async (req, res, next) => {
     const { params: { id }} = req; // same as 'const id = req.params.id;'
-    console.log(id);
-    await db.query('SELECT * from users WHERE id = $1::integer', [id], errorHandlerCreator(res, next));
+    const resultHandler = (response, result) => {
+        res.json({user:result.rows[0]})
+    };
+    await db.query(
+        'SELECT * from users WHERE id = $1::integer', [id], 
+        errorHandlerCreator(resultHandler, res, next));
 });
 
 // create one user
@@ -35,6 +38,15 @@ router.post('/', async (req, res, next) => {
 });
 
 // update one user
+router.put('/:id', async (req, res, next) => {
+    const { params: { id }, body } = req;
+    const resHandler = (response, result) => {
+        response.json({user:result.rows[0]})
+    };
+    await db.query(
+        'SELECT * from users WHERE id = $1::integer', [id], 
+        errorHandlerCreator(resHandler, res, next));
+});
 
 
 // delete one user
