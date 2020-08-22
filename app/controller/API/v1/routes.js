@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userCrud = require('./userCrud');
+const locationCrud = require('./locationCrud');
 
 router.get('/', (req, res) => {
     res.json({
@@ -9,5 +10,6 @@ router.get('/', (req, res) => {
 });
 
 router.use('/user', userCrud);
+router.use('/location', locationCrud);
 
 module.exports = router;
