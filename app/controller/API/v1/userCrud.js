@@ -1,9 +1,7 @@
 const express = require('express');
 const { db, errorHandlerCreator } = require('../../../model/db/db.js');
 const router = express.Router();
-const loginAuth = require('./loginAuth');
-const bodyParser = require('body-parser');
-const jsonParser = bodyParser.json();
+const { hashPassword } = require('../../helpers/authHelpers');
 
 // CRUD for users
 
@@ -28,9 +26,8 @@ router.get('/:id', async (req, res, next) => {
 
 // create one user
 router.post('/', async (req, res, next) => {
-
     let { firstName, lastName, email, phone, password } = req.body.user;
-    password = await loginAuth(password);
+    password = await hashPassword(password);
 
     const resHandler = (response, query_result) => {
         response.json({
@@ -49,6 +46,7 @@ router.post('/', async (req, res, next) => {
 });
 
 // update one user
+// TODO: Implement
 router.put('/:id', async (req, res, next) => {
     const { params: { id }, body } = req;
     const resHandler = (response, result) => {
@@ -61,6 +59,6 @@ router.put('/:id', async (req, res, next) => {
 
 
 // delete one user
-
+// TODO: determine if we want to implement
 
 module.exports = router;

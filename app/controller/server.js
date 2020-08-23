@@ -5,7 +5,7 @@ const cors = require('cors');
 require('dotenv').config()
 
 // Routers
-const api_v1 = require('./API/v1/routes.js');
+const api = require('./API/api_routes.js');
 const errorMiddleware = require('./middlewares/errorMiddleware');
 
 const app = express();
@@ -17,7 +17,7 @@ app.use(cors({
     origin: 'http://localhost:3000'
 }));
 
-app.use('/api/v1', api_v1);
+app.use('/api/', api);
 
 app.get('/', (req, res) => {
     res.json({

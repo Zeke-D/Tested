@@ -1,7 +1,3 @@
-const express = require('express');
-
-const errorRouter = express.Router();
-
 // not found middleware
 const notFoundMiddleware = (req, res, next) => {
     const err = new Error(`URL ${req.originalUrl} not found`);
