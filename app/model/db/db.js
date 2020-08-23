@@ -20,11 +20,6 @@ function pgErrorHandlerCreator(responseHandler, req, res, next) {
             res.status(422);
             next(error);
         }
-        else if (req.method == "GET" && query_result.rows.length === 0) {
-            console.log(query_result);
-            res.status(404);
-            next({message: "No entries found"});
-        }
         else {
             // if we've gotten a response and no errors, we proceed to handle the response
             responseHandler(res, query_result);

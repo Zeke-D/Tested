@@ -2,8 +2,11 @@ const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
-const api_v1 = require('./API/v1/routes.js');
 require('dotenv').config()
+
+// Routers
+const api_v1 = require('./API/v1/routes.js');
+const errorMiddleware = require('./middlewares/errorMiddleware');
 
 const app = express();
 // setup middleware
@@ -22,22 +25,8 @@ app.get('/', (req, res) => {
     })
 });
 
-
-// not found middleware
-app.use((req, res, next) => {
-    const err = new Error(`URL ${req.originalUrl} not found`);
-    res.status(404);
-    next(err);
-});
-
-app.use((error, req, res, next) => {
-    const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-    res.status(statusCode);
-    res.json({
-        message: error.message,
-        stack: error.stack
-    });
-});
+app.use(errorMiddleware.notFoundMiddleware);
+app.use(errorMiddleware.errorHandlerMiddleware);
 
 const port = process.env.PORT || 1337;
 app.listen(port, () => {console.log("WOOHOO")});

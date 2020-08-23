@@ -6,27 +6,27 @@ const jsonParser = bodyParser.json();
 // CRUD for locations
 const router = express.Router();
 
+// default location handler for returning an array of location results
+const locationResultHandler = (response, result) => {
+    response.json({locations: result.rows})
+};
+
 // read all locations
 router.get('/', async (req, res) => {
-    const query_res = await db.query('SELECT * from locations');
-    res.json({
-        locations: query_res.rows
-    });
+    const query_res = await db.query('SELECT * from locations',[],
+        errorHandlerCreator(locationResultHandler, req, res, next));
 });
 
 // read one location
 router.get('/:id', async (req, res, next) => {
     const { params: { id }} = req; // same as 'const id = req.params.id;'
-    const resultHandler = (response, result) => {
-        res.json({user:result.rows[0]})
-    };
     await db.query(
         'SELECT * from locations WHERE id = $1::integer', [id], 
-        errorHandlerCreator(resultHandler, req, res, next));
+        errorHandlerCreator(locationResultHandler, req, res, next));
 });
 
 // find nearby available locations/times
-router.get('/find/:latitude&:longitude&:radius', async (req, res, next) => {
+router.get('/findTimes/:latitude&:longitude&:radius', async (req, res, next) => {
     const { latitude, longitude } = req.params;
 
     const MAX_RADIUS_IN_MILES = 20;
@@ -52,15 +52,9 @@ router.get('/find/:latitude&:longitude&:radius', async (req, res, next) => {
                     where time_slots.user_id isnull and time_slots.time >= CURRENT_DATE\
 	                group by nearby_locs.id, lat, long, ran_by, name;";
 
-    const resultHandler = (response, result) => {
-        response.json({
-            "available_appointments":result.rows
-        })
-    };
-
     await db.query(
         query, [latitude, longitude, radius],
-        errorHandlerCreator(resultHandler, req, res, next));
+        errorHandlerCreator(locationResultHandler, req, res, next));
 });
 
 
