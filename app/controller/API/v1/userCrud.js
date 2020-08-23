@@ -5,20 +5,21 @@ const { hashPassword } = require('../../helpers/authHelpers');
 
 // CRUD for users
 
+// default result handler for user db query responses
+const resultHandler = (response, result) => {
+    response.json({users:result.rows})
+};
+
 // read all users
-router.get('/', async (req, res) => {
-    const query_res = await db.query('SELECT * from users');
-    res.json({
-        users: query_res.rows
-    });
+router.get('/', async (req, res, next) => {
+    const query_res = await db.query('SELECT * from users', [], 
+        errorHandlerCreator(resultHandler, res, next));
 });
 
 // read one user
 router.get('/:id', async (req, res, next) => {
     const { params: { id }} = req; // same as 'const id = req.params.id;'
-    const resultHandler = (response, result) => {
-        res.json({user:result.rows[0]})
-    };
+    
     await db.query(
         'SELECT * from users WHERE id = $1::integer', [id], 
         errorHandlerCreator(resultHandler, res, next));
@@ -41,7 +42,7 @@ router.post('/', async (req, res, next) => {
         'INSERT INTO users (first_name, last_name, email, phone, password)\
         VALUES ($1, $2, $3, $4, $5)',
         [firstName, lastName, email, phone, password],
-        errorHandlerCreator(resHandler, req, res, next)
+        errorHandlerCreator(resHandler, res, next)
     );
 });
 
@@ -49,12 +50,9 @@ router.post('/', async (req, res, next) => {
 // TODO: Implement
 router.put('/:id', async (req, res, next) => {
     const { params: { id }, body } = req;
-    const resHandler = (response, result) => {
-        response.json({user:result.rows[0]})
-    };
     await db.query(
         'SELECT * from users WHERE id = $1::integer', [id], 
-        errorHandlerCreator(resHandler, res, next));
+        errorHandlerCreator(resultHandler, res, next));
 });
 
 

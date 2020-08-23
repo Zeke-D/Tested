@@ -10,18 +10,20 @@ const pool = new Pool({
     connectionTimeoutMillis: 2000,
 })
 
+// Higher Order function to create postgres error handler
 // takes in:
 //      - responseHandler (which performs actions on the res object based on the query result)
 //      - res (response object)
 //      - next
-function pgErrorHandlerCreator(responseHandler, req, res, next) {
+function pgErrorHandlerCreator(responseHandler, res, next) {
     return (error, query_result) => {
         if (error) {
             res.status(422);
             next(error);
         }
         else {
-            // if we've gotten a response and no errors, we proceed to handle the response
+            // if we've gotten a response and no errors, 
+            // we proceed to handle the response with provided responseHandler
             responseHandler(res, query_result);
         }
     }

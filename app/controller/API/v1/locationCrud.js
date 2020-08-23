@@ -1,7 +1,5 @@
 const express = require('express');
 const { db, errorHandlerCreator } = require('../../../model/db/db.js');
-const bodyParser = require('body-parser');
-const jsonParser = bodyParser.json();
 
 // CRUD for locations
 const router = express.Router();
@@ -22,7 +20,7 @@ router.get('/:id', async (req, res, next) => {
     const { params: { id }} = req; // same as 'const id = req.params.id;'
     await db.query(
         'SELECT * from locations WHERE id = $1::integer', [id], 
-        errorHandlerCreator(locationResultHandler, req, res, next));
+        errorHandlerCreator(locationResultHandler, res, next));
 });
 
 // find nearby available locations/times
@@ -54,7 +52,7 @@ router.get('/findTimes/:latitude&:longitude&:radius', async (req, res, next) => 
 
     await db.query(
         query, [latitude, longitude, radius],
-        errorHandlerCreator(locationResultHandler, req, res, next));
+        errorHandlerCreator(locationResultHandler, res, next));
 });
 
 
