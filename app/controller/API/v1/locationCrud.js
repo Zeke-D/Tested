@@ -25,7 +25,7 @@ router.get('/:id', async (req, res, next) => {
         errorHandlerCreator(resultHandler, req, res, next));
 });
 
-// find nearby locations
+// find nearby available locations/times
 router.get('/find/:latitude&:longitude&:radius', async (req, res, next) => {
     const { latitude, longitude } = req.params;
 
@@ -38,15 +38,26 @@ router.get('/find/:latitude&:longitude&:radius', async (req, res, next) => {
         next({message: "Radius is not a valid floating point number."});
         return;
     }
-    
-    const query = "SELECT * FROM locations\
-                   WHERE calculate_distance($1::float8, $2::float8, lat, long, 'M') <= $3::float8";
-    
+
+    // this will return all available times slots and locations within a set radius
+    const query =  "select \
+                        array_agg(time) as times,\
+                        lat, long, ran_by, name, \
+                        nearby_locs.id as loc_id\
+                    from time_slots \
+                    inner join ( \
+	                    select id, lat, long, ran_by, name from locations \
+                        where calculate_distance($1::float8, $2::float8, lat, long, 'M') <= $3::float8 \
+                    ) as nearby_locs on time_slots.location_id=nearby_locs.id \
+                    where time_slots.user_id isnull and time_slots.time >= CURRENT_DATE\
+	                group by nearby_locs.id, lat, long, ran_by, name;";
+
     const resultHandler = (response, result) => {
         response.json({
-            "locations":result.rows
+            "available_appointments":result.rows
         })
     };
+
     await db.query(
         query, [latitude, longitude, radius],
         errorHandlerCreator(resultHandler, req, res, next));
