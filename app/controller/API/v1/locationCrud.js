@@ -12,7 +12,7 @@ const locationResultHandler = (response, result) => {
 // read all locations
 router.get('/', async (req, res, next) => {
     const query_res = await db.query('SELECT * from locations',[],
-        errorHandlerCreator(locationResultHandler, req, res, next));
+        errorHandlerCreator(locationResultHandler, res, next));
 });
 
 // read one location
