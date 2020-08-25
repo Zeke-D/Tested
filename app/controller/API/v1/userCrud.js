@@ -1,7 +1,7 @@
 const express = require('express');
-const { db, errorHandlerCreator } = require('../../../model/db/db.js');
+const { User, Name } = require("../../../model/user.js");
+const { hashPassword } = require('../../../helpers/authHelpers');
 const router = express.Router();
-const { hashPassword } = require('../../helpers/authHelpers');
 
 // CRUD for users
 
@@ -10,53 +10,26 @@ const resultHandler = (response, result) => {
     response.json({users:result.rows})
 };
 
-// read all users
-router.get('/', async (req, res, next) => {
-    const query_res = await db.query('SELECT * from users', [], 
-        errorHandlerCreator(resultHandler, res, next));
-});
-
 // read one user
 router.get('/:id', async (req, res, next) => {
     const { params: { id }} = req; // same as 'const id = req.params.id;'
+
+    await User.find(id)
+    .then(result => res.json({user: result}))
+    .catch(err => next(err));
     
-    await db.query(
-        'SELECT * from users WHERE id = $1::integer', [id], 
-        errorHandlerCreator(resultHandler, res, next));
 });
 
 // create one user
 router.post('/', async (req, res, next) => {
     let { firstName, lastName, email, phone, password } = req.body.user;
-    password = await hashPassword(password);
+    const user = new User(
+        new Name(firstName, lastName), phone, email, 
+        await hashPassword(password));
 
-    const resHandler = (response, query_result) => {
-        response.json({
-            message: "User succesfully added."
-        });
-    };
-
-    //query that adds user to db
-    //error handler is fired off but data still gets entered into db... very weird
-    await db.query(
-        'INSERT INTO users (first_name, last_name, email, phone, password)\
-        VALUES ($1, $2, $3, $4, $5)',
-        [firstName, lastName, email, phone, password],
-        errorHandlerCreator(resHandler, res, next)
-    );
+    await user.save()
+    .then(response => res.json(response))
+    .catch(err => next(err));
 });
-
-// update one user
-// TODO: Implement
-router.put('/:id', async (req, res, next) => {
-    const { params: { id }, body } = req;
-    await db.query(
-        'SELECT * from users WHERE id = $1::integer', [id], 
-        errorHandlerCreator(resultHandler, res, next));
-});
-
-
-// delete one user
-// TODO: determine if we want to implement
 
 module.exports = router;

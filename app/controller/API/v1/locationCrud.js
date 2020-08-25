@@ -1,5 +1,5 @@
 const express = require('express');
-const { db, errorHandlerCreator } = require('../../../model/db/db.js');
+const { Location } = require('../../../model/location');
 
 // CRUD for locations
 const router = express.Router();
@@ -9,18 +9,14 @@ const locationResultHandler = (response, result) => {
     response.json({locations: result.rows})
 };
 
-// read all locations
-router.get('/', async (req, res, next) => {
-    const query_res = await db.query('SELECT * from locations',[],
-        errorHandlerCreator(locationResultHandler, res, next));
-});
 
 // read one location
 router.get('/:id', async (req, res, next) => {
     const { params: { id }} = req; // same as 'const id = req.params.id;'
-    await db.query(
-        'SELECT * from locations WHERE id = $1::integer', [id], 
-        errorHandlerCreator(locationResultHandler, res, next));
+    Location.find(id)
+    .then(result => res.json({location:result}))
+    .catch(err => next(err));
+
 });
 
 // find nearby available locations/times
@@ -38,21 +34,9 @@ router.get('/findTimes/:latitude&:longitude&:radius', async (req, res, next) => 
     }
 
     // this will return all available times slots and locations within a set radius
-    const query =  "select \
-                        array_agg(time) as times,\
-                        lat, long, ran_by, name, \
-                        nearby_locs.id as loc_id\
-                    from time_slots \
-                    inner join ( \
-	                    select id, lat, long, ran_by, name from locations \
-                        where calculate_distance($1::float8, $2::float8, lat, long, 'M') <= $3::float8 \
-                    ) as nearby_locs on time_slots.location_id=nearby_locs.id \
-                    where time_slots.user_id isnull and time_slots.time >= CURRENT_DATE\
-	                group by nearby_locs.id, lat, long, ran_by, name;";
-
-    await db.query(
-        query, [latitude, longitude, radius],
-        errorHandlerCreator(locationResultHandler, res, next));
+    Location.findNearby(latitude, longitude, radius)
+    .then(result => res.json({locations:result}))
+    .catch(err => next(err));
 });
 
 
