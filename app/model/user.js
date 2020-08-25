@@ -44,6 +44,14 @@ class User {
             .catch(err => reject(new NotFoundError("User could not be found.")))
         });
     }
+    //finds user by email in order to log them in
+    static async findByEmail(email) {
+        return new Promise((resolve, reject) => {
+            db.query('SELECT * from users WHERE email=$1::text', [email])
+            .then(result => resolve(result.rows[0]))
+            .catch(err => reject(new NotFoundError("User could not be found.")))
+        });
+    }
 
 }
 
