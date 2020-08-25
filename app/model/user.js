@@ -52,14 +52,6 @@ class User {
             .catch(err => reject(new NotFoundError("User could not be found.")))
         });
     }
-
-    static async findAll() {
-        return new Promise((resolve, reject) => {
-            db.query('SELECT * from users')
-            .then(result => resolve(result.rows[0]))
-            .catch(err => reject(new NotFoundError("User could not be found.")))
-        });
-    }
 }
 
 module.exports = {

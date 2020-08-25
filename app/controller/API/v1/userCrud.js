@@ -14,12 +14,6 @@ router.get('/:id', async (req, res, next) => {
     
 });
 
-router.get('/', auth, async (req, res, next) => {
-    User.findAll()
-    .then(response => res.json(response))
-    .catch(err => next(err))
-})
-
 // create one user
 router.post('/register', async (req, res, next) => {
     let { firstName, lastName, email, phone, password } = req.body;
