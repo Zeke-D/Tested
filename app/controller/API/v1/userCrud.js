@@ -2,6 +2,7 @@ const express = require('express');
 const { db, errorHandlerCreator } = require('../../../model/db/db.js');
 const router = express.Router();
 const {hashPassword} = require('../../../helpers/authHelpers.js');
+const { User, Name } = require('../../../model/user.js')
 
 
 
@@ -18,8 +19,10 @@ router.get('/', async (req, res) => {
 // read one user
 router.get('/:id', async (req, res, next) => {
     const { params: { id }} = req; // same as 'const id = req.params.id;'
-    console.log(id);
-    await db.query('SELECT * from users WHERE id = $1::integer', [id], errorHandlerCreator(res, next));
+    User.find(id)
+    .then(result => res.json({location:result}))
+    .catch(err => next(err));
+    
 });
 
 // create one user
