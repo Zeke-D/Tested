@@ -1,6 +1,6 @@
 const express = require('express');
 const { User, Name } = require("../../../model/user.js");
-const { hashPassword, comparePass } = require('../../../helpers/authHelpers');
+const { hashPassword, comparePass, auth } = require('../../../helpers/authHelpers');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 
@@ -13,6 +13,12 @@ router.get('/:id', async (req, res, next) => {
     .catch(err => next(err));
     
 });
+
+router.get('/', auth, async (req, res, next) => {
+    User.findAll()
+    .then(response => res.json(response))
+    .catch(err => next(err))
+})
 
 // create one user
 router.post('/register', async (req, res, next) => {
@@ -32,14 +38,13 @@ router.post('/login', async (req, res, next) => {
 
     const user = await User.findByEmail(email)
     .then(async response =>{
-        //made into a variale because async await 
         const rightCredentials = await comparePass(password, response.password)
         if(!rightCredentials){
             res.status(400).send({ error: "Invalid credentials" })
         }
         const token = jwt.sign({ _id: response.id }, process.env.TOKEN)
-        // res.status(200).json(response)
-        res.header('auth-token').send(token)
+        //return res.status(200).json(response)
+        res.header('auth-token', token).send('User successfully logged in!')
     })
     .catch(err => next(err));
 })
