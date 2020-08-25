@@ -1,49 +1,28 @@
 const express = require('express');
-const { db, errorHandlerCreator } = require('../../../model/db/db.js');
+const { User, Name } = require("../../../model/user.js");
+const { hashPassword } = require('../../../helpers/authHelpers');
 const router = express.Router();
-const {hashPassword} = require('../../../helpers/authHelpers.js');
-const { User, Name } = require('../../../model/user.js')
-
-
-
-// CRUD for users
-
-// read all users
-router.get('/', async (req, res) => {
-    const query_res = await db.query('SELECT * from users');
-    res.json({
-        user:query_res
-    });
-});
 
 // read one user
 router.get('/:id', async (req, res, next) => {
-    const { params: { id }} = req; // same as 'const id = req.params.id;'
-    User.find(id)
-    .then(result => res.json({location:result}))
-    .catch(err => next(err));
-    
-});
+    const { params: { id }} = req; // same as 'const id = req.params.id;'
+
+    User.find(id)
+    .then(result => res.json({user: result}))
+    .catch(err => next(err));
+    
+);
 
 // create one user
 router.post('/', async (req, res, next) => {
+    let { firstName, lastName, email, phone, password } = req.body.user;
+    const user = new User(
+        new Name(firstName, lastName), phone, email, 
+        await hashPassword(password));
 
-    const { firstName, lastName, email, phone } = req.body
-    const password = await hashPassword(req.body.password)
-
-    //query that adds user to db
-    //error handler is fired off but data still gets entered into db... very weird
-//     await db.query('INSERT INTO users (first_name, last_name, email, phone, password) VALUES ($1, $2, $3, $4, $5)',
-//    [firstName, lastName, email, phone, password], errorHandlerCreator(res, next));
+    user.save()
+    .then(response => res.json(response))
+    .catch(err => next(err));
 });
-
-// update one user
-
-
-// delete one user
-router.delete('/', async (req, res, next) => {
-    //TODO add delete user route
-})
-
 
 module.exports = router;
