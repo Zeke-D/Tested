@@ -11,7 +11,7 @@ router.get('/:id', async (req, res, next) => {
     .then(result => res.json({user: result}))
     .catch(err => next(err));
     
-);
+});
 
 // create one user
 router.post('/', async (req, res, next) => {
