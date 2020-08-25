@@ -1,6 +1,7 @@
 const express = require('express');
 const { User, Name } = require("../../../model/user.js");
 const { hashPassword, comparePass } = require('../../../helpers/authHelpers');
+const jwt = require('jsonwebtoken');
 const router = express.Router();
 
 // read one user
@@ -36,7 +37,9 @@ router.post('/login', async (req, res, next) => {
         if(!rightCredentials){
             res.status(400).send({ error: "Invalid credentials" })
         }
-        res.status(200).json(response)
+        const token = jwt.sign({ _id: response.id }, process.env.TOKEN)
+        // res.status(200).json(response)
+        res.header('auth-token').send(token)
     })
     .catch(err => next(err));
 })
