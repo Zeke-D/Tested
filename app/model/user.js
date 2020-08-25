@@ -30,10 +30,8 @@ class User {
             [this.name.first, this.name.last, this.email, this.phoneNumber, this.password])
             .then(result => resolve({message: "User created succesfully."}))
             .catch(err => reject(parsePgError(err)));
-
         });
     }
-
 
     // finds a user with a given id
     // returns a promise that resolves with a user, rejects with a db error
@@ -52,6 +50,8 @@ class User {
             .catch(err => reject(new NotFoundError("User could not be found.")))
         });
     }
+
+    //TODO create findByEmailAndUpdate
 }
 
 module.exports = {

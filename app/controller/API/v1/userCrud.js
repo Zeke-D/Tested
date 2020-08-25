@@ -2,6 +2,7 @@ const express = require('express');
 const { User, Name } = require("../../../model/user.js");
 const { hashPassword, comparePass, auth } = require('../../../helpers/authHelpers');
 const jwt = require('jsonwebtoken');
+const validate = require('validator')
 const router = express.Router();
 
 // read one user
@@ -11,18 +12,31 @@ router.get('/:id', async (req, res, next) => {
     User.find(id)
     .then(result => res.json({user: result}))
     .catch(err => next(err));
-    
 });
 
 // create one user
 router.post('/register', async (req, res, next) => {
     let { firstName, lastName, email, phone, password } = req.body;
+
+    if(!validate.isEmail(email)){
+        res.status(400).send({ error: 'Please enter a valid email' })
+    }
+
+    if(password.length < 8){
+        res.status(400).send({ error: 'Password is too short, must be atleast 8 characters long' })
+    }
     const user = new User(
         new Name(firstName, lastName), phone, email, 
         await hashPassword(password));
 
     user.save()
-    .then(response => res.json(response))
+    .then(response => {
+        const token = jwt.sign({ _id: email }, process.env.TOKEN, {
+            expiresIn: 3 * 24 * 60 * 60
+        })
+
+        res.header('auth-token', token).send('User successfully registered!')
+    })
     .catch(err => next(err));
 });
 
@@ -32,15 +46,37 @@ router.post('/login', async (req, res, next) => {
     const user = await User.findByEmail(email)
     .then(async response => {
         const rightCredentials = await comparePass(password, response.password)
-        console.log(response.password)
         if(!rightCredentials){
-            res.status(400).send({ error: "Invalid credentials" })
+            return res.status(400).send({ error: "Invalid credentials" })
         }
-        const token = jwt.sign({ _id: response.id }, process.env.TOKEN)
+        //token expires in 3 days
+        const token = jwt.sign({ _id: response.email }, process.env.TOKEN, {
+            expiresIn: 3 * 24 * 60 * 60
+        })
         //return res.status(200).json(response)
-        res.header('auth-token', token).send('User successfully logged in!')
+        res.header('auth-token', token).send('User successfully logged in!');
     })
     .catch(err => next(err));
 })
+
+//gets user profile/information
+router.get('/', auth, async (req, res, next) => {
+    const user = User.findByEmail(req.user._id)
+    .then(response => {
+        res.status(200).send({
+            firstName: response.first_name,
+            lastName: response.last_name,
+            email: response.email,
+            number: response.phone
+        })
+    })
+    .then(err => next(err))
+})
+
+//logs user out by wiping away tokens
+router.post("/logout", auth, (req, res, next) => {
+    return res.header('auth-token', '').send({ message: 'Logged out' })
+})
+
 
 module.exports = router;

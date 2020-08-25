@@ -12,10 +12,14 @@ const comparePass = async (plainTextPass, hashedPass) => {
    return validPass;
 }
 
+//req.user is equal to the token
+//req.user can now be used in every route where auth is used as middleware
+//req.user._id = user email (which is unique) 
+//this can be used throughout the routes now to identify user's locations
 const auth = (req, res, next) => {
    const token = req.header('auth-token');
    if(!token) {
-      return res.status(401).send('Access denied')
+      return res.status(401).send('Please login to view resources')
    }
 
    try{
