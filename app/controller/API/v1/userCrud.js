@@ -28,13 +28,17 @@ router.post('/register', async (req, res, next) => {
 //logs user in 
 router.post('/login', async (req, res, next) => {
     const { email, password } = req.body
-    const user = await User.findByEmail(email);
 
-    if(!comparePass(password, user.password)){
-       return res.status(400).send({ error: "Invalid credentials"})
-    }
-
-    res.send('logged in successfully')
+    const user = await User.findByEmail(email)
+    .then(async response =>{
+        //made into a variale because async await 
+        const rightCredentials = await comparePass(password, response.password)
+        if(!rightCredentials){
+            res.status(400).send({ error: "Invalid credentials" })
+        }
+        res.status(200).json(response)
+    })
+    .catch(err => next(err));
 })
 
 module.exports = router;
