@@ -2,7 +2,8 @@ const express = require('express');
 const { User, Name } = require("../../../model/user.js");
 const { hashPassword, comparePass, auth } = require('../../../helpers/authHelpers');
 const jwt = require('jsonwebtoken');
-const validate = require('validator')
+const validate = require('validator');
+const user = require('../../../model/user.js');
 const router = express.Router();
 
 // read one user
@@ -61,7 +62,7 @@ router.post('/login', async (req, res, next) => {
 
 //gets user profile/information
 router.get('/', auth, async (req, res, next) => {
-    const user = User.findByEmail(req.user._id)
+     await User.findByEmail(req.user._id)
     .then(response => {
         res.status(200).send({
             firstName: response.first_name,
@@ -70,10 +71,33 @@ router.get('/', auth, async (req, res, next) => {
             number: response.phone
         })
     })
-    .then(err => next(err))
+    .catch(err => next(err))
 })
 
-//logs user out by wiping away tokens
+//allows user to change password
+router.patch('/change-password', auth, async (req, res, next) => {
+    let { password } = req.body
+    password = await hashPassword(password)
+
+    await User.updatePassword(req.user._id, password)
+    .then(response => {
+        res.status(200).send(res.json(response))
+    })
+    .catch(err => next(err))
+})
+
+//allows user to change phone number
+router.patch('/change-number', auth, async (req, res, next) => {
+    let { number } = req.body
+
+    await User.updateNumber(req.user._id, number)
+    .then(response => {
+        res.status(200).send(res.json(response))
+    })
+    .catch(err => next(err))
+})
+
+//logs user out by wiping away token
 router.post("/logout", auth, (req, res, next) => {
     return res.header('auth-token', '').send({ message: 'Logged out' })
 })

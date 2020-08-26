@@ -50,8 +50,22 @@ class User {
             .catch(err => reject(new NotFoundError("User could not be found.")))
         });
     }
-
-    //TODO create findByEmailAndUpdate
+    //updates user password
+    static async updatePassword(email, password) {
+        return new Promise((resolve, reject) => {
+            db.query('UPDATE users SET password=$1::text WHERE email=$2::text', [password, email])
+            .then(result => resolve(result.rows[0]))
+            .catch(err => reject(new NotFoundError("User could not be found.")))
+        });
+    }
+    //updates user phone number
+    static async updateNumber(email, number) {
+        return new Promise((resolve, reject) => {
+            db.query('UPDATE users SET phone=$1::text WHERE email=$2::text', [number, email])
+            .then(result => resolve(result.rows[0]))
+            .catch(err => reject(new NotFoundError("User could not be found.")))
+        });
+    }
 }
 
 module.exports = {
