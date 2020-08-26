@@ -77,6 +77,7 @@ router.get('/', auth, async (req, res, next) => {
 //allows user to change password
 router.patch('/change-password', auth, async (req, res, next) => {
     let { password } = req.body
+    if(password.length < 8) return res.status(401).send({ error: "Password must be atleast 8 characters" })
     password = await hashPassword(password)
 
     await User.updatePassword(req.user._id, password)
@@ -92,7 +93,7 @@ router.patch('/change-number', auth, async (req, res, next) => {
 
     await User.updateNumber(req.user._id, number)
     .then(response => {
-        res.status(200).send(res.json(response))
+        return res.status(200).send(res.json(response))
     })
     .catch(err => next(err))
 })
