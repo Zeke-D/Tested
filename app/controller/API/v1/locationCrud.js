@@ -16,7 +16,6 @@ router.get('/:id', async (req, res, next) => {
     Location.find(id)
     .then(result => res.json({location:result}))
     .catch(err => next(err));
-
 });
 
 // find nearby available locations/times
