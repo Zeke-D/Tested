@@ -32,13 +32,15 @@ router.post('/register', async (req, res, next) => {
 
     user.save()
     .then(response => {
-        const token = jwt.sign({ _id: email }, process.env.TOKEN, {
+        const token = jwt.sign({ _id: email }, process.env.TOKEN_SECRET, {
             expiresIn: 3 * 24 * 60 * 60
         })
-
         res.header('auth-token', token).send('User successfully registered!')
     })
-    .catch(err => next(err));
+    .catch(err =>{
+        res.status(400)
+        next(err)
+    });
 });
 
 //logs user in 
@@ -62,13 +64,13 @@ router.post('/login', async (req, res, next) => {
 
 //gets user profile/information
 router.get('/', auth, async (req, res, next) => {
-     await User.findByEmail(req.user._id)
+     await User.findByEmail(req.token._id)
     .then(response => {
         res.status(200).send({
             firstName: response.first_name,
             lastName: response.last_name,
             email: response.email,
-            number: response.phone
+            number: response.phone,
         })
     })
     .catch(err => next(err))
@@ -77,6 +79,7 @@ router.get('/', auth, async (req, res, next) => {
 //allows user to change password
 router.patch('/change-password', auth, async (req, res, next) => {
     let { password } = req.body
+    if(password.length < 8) return res.status(401).send({ error: "Password must be atleast 8 characters" })
     password = await hashPassword(password)
 
     await User.updatePassword(req.user._id, password)
@@ -92,14 +95,15 @@ router.patch('/change-number', auth, async (req, res, next) => {
 
     await User.updateNumber(req.user._id, number)
     .then(response => {
-        res.status(200).send(res.json(response))
+        return res.status(200).send(res.json(response))
     })
     .catch(err => next(err))
 })
 
 //logs user out by wiping away token
 router.post("/logout", auth, (req, res, next) => {
-    return res.header('auth-token', '').send({ message: 'Logged out' })
+    req.token = '';
+    return res.header('auth-token', req.token).send({ message: 'Logged out' })
 })
 
 
