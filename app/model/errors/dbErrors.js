@@ -7,16 +7,20 @@ class BadQueryError extends DBError {
 }
 
 class EntryAlreadyExistsError extends DBError {
+    constructor(message) {
+        super(message);
+        this.messaage = message;
+    }
     get statusCode() {
         return 400;
     }
 }
 
 // parse postgres error returned from queries
-function parsePgError(err) {
+function parsePgError(err) { 
     if (err.message.includes("unique")) {
-        if (err.message.includes("user")) {
-            return new EntryAlreadyExistsError("User with that email already exists.");
+        if (err.message.includes("email")) {
+            return new EntryAlreadyExistsError("A user with that email already exists.");
         }
     }
     else {
