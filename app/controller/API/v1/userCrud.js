@@ -62,7 +62,7 @@ router.post('/login', async (req, res, next) => {
     .catch(err => next(err));
 })
 
-//gets user profile/information
+//gets user profile information
 router.get('/', auth, async (req, res, next) => {
      await User.findByEmail(req.token._id)
     .then(response => {
