@@ -3,6 +3,7 @@
   import {onMount} from 'svelte';
   import TimeSelect from './forms/TimeSelect.svelte';
   import TestedMarker from './TestedMarker.svelte';
+  import TimeFinder from './forms/TimeFinder.svelte';
   const { GeolocateControl, NavigationControl, ScaleControl } = controls;
   const apiPublicKey = "pk.eyJ1IjoicHNldWRvbnltb250eSIsImEiOiJjanR6eDE5MTIzOHo3NDRuc28yOTgxem4wIn0.pnMTUhVyBUsJFKOx9waTJA";
   let mapComponent;
@@ -47,6 +48,7 @@
   <blockquote>error</blockquote>
 {/each}
 <TimeSelect bind:domRep={domTimeSelect} availableTimes={["6:00pm", "6:15pm", "6:30pm"]}/>
+<TimeFinder/>
 {#if domTimeSelect !== undefined}
   <div class="mapContainer">
     <Map
