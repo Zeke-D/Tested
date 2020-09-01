@@ -36,9 +36,10 @@ router.post('/register', async (req, res, next) => {
             expiresIn: 3 * 24 * 60 * 60
         })
         res.header('auth-token', token).send('User successfully registered!')
+        res.redirect('/home')
     })
     .catch(err =>{
-        res.status(400)
+        res.status(400).send(err.message)
         next(err)
     });
 });
