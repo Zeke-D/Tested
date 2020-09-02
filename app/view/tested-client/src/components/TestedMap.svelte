@@ -14,6 +14,7 @@
     longitude: undefined
   }
   let domTimeSelect;
+  let locationEnabled = false;
   export let errors = [];
   export let range = 1; //range in miles
   function getLocation() {
@@ -24,11 +25,15 @@
           currentLocation.latitude  = pos.coords.latitude;
           currentLocation.longitude = pos.coords.longitude;
           mapComponent.setCenter([currentLocation.longitude, currentLocation.latitude], 12);
+          locationEnabled = true;
+        },
+        (error) => {
+          errors = [...errors, "You must allow location services to work."]
         }
       );
     }
     else {
-      errors.append('The browser does not support location.')
+      errors = [...errors, 'The browser does not support location.'];
     }
   }
   onMount(() => {
@@ -42,15 +47,19 @@
   height: 100vh;
   margin: 0 auto;
 }
+.hidden {
+  display: none;
+  visibility: hidden;
+}
+
 </style>
 
 {#each errors as error, i}
-  <blockquote>error</blockquote>
+  <blockquote>{error}</blockquote>
 {/each}
-<TimeSelect bind:domRep={domTimeSelect} availableTimes={["6:00pm", "6:15pm", "6:30pm"]}/>
-<TimeFinder/>
 {#if domTimeSelect !== undefined}
-  <div class="mapContainer">
+  <div class="mapContainer"
+       class:hidden="{!locationEnabled}">
     <Map
       accessToken="{apiPublicKey}"
       bind:this={mapComponent}
@@ -66,3 +75,7 @@
     </Map>
   </div>
 {/if}
+<div class:hidden="{!locationEnabled}">
+  <TimeSelect bind:domRep={domTimeSelect} availableTimes={["6:00pm", "6:15pm", "6:30pm"]}/>
+  <TimeFinder/>
+</div>
