@@ -17,6 +17,8 @@
         position: absolute;
         top: 20px;
         left: 20px;
+        padding-left: 200px;
+        margin-left: 200px;
         z-index: 1000;
         border-radius: 5px;
         background-color: rgba(255, 255, 255, .7);
