@@ -46,7 +46,9 @@ router.post('/register', async (req, res, next) => {
 
 //logs user in 
 router.post('/login', async (req, res, next) => {
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     const { email, password } = req.body
+    console.log(req.body)
     const user = await User.findByEmail(email)
     .then(async response => {
         const rightCredentials = await comparePass(password, response.password)

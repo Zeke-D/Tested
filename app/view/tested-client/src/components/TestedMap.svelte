@@ -29,6 +29,7 @@
         },
         (error) => {
           errors = [...errors, "You must allow location services to work."]
+          console.log(error)
         }
       );
     }
@@ -43,9 +44,10 @@
 
 <style>
 .mapContainer {
-  width: 100vw;
-  height: 100vh;
+  width: 1000px;
+  height: 500px;
   margin: 0 auto;
+  margin-top: 20px;
 }
 .hidden {
   display: none;

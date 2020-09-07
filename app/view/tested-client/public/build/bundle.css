@@ -1,8 +1,9 @@
 div.svelte-1k1b3t4{padding:0}
 div.svelte-1kuj9kb{width:100%;height:100%}
 main.svelte-18c34wo{text-align:center;padding:0;max-width:240px;margin:0}@media(min-width: 640px){main.svelte-18c34wo{max-width:none}}
-.mapContainer.svelte-115togk{width:100vw;height:100vh;margin:0 auto}
+.mapContainer.svelte-18vp52k{width:1000px;height:500px;margin:0 auto;margin-top:20px}.hidden.svelte-18vp52k{display:none;visibility:hidden}
+.formContainer.svelte-16pc5cb{width:200px;color:red;margin:0 auto;padding-top:25vh}
 .picker.svelte-1wulf83{width:200px;padding:40px;position:absolute;top:20px;left:20px;padding-left:200px;margin-left:200px;z-index:1000;border-radius:5px;background-color:rgba(255, 255, 255, .7)}
-.formContainer.svelte-42o5o1{width:200px;margin-top:30px}
+.formContainer.svelte-wysux9{width:200px}
 
 /*# sourceMappingURL=bundle.css.map */

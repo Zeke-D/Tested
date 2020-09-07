@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Zeke-D/Tested#readme",
   "dependencies": {
+    "axios": "^0.20.0",
     "bcrypt": "^5.0.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",

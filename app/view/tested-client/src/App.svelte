@@ -1,9 +1,11 @@
 <script>
 	import TestedMap from "./components/TestedMap.svelte";
+	import Login from './components/forms/Login.svelte';
+	//<TestedMap/>
 </script>
 
 <main>
-	<TestedMap/>
+	<Login/>
 </main>
 <style>
 	main {
