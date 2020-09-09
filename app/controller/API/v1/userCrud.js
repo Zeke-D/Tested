@@ -46,21 +46,23 @@ router.post('/register', async (req, res, next) => {
 
 //logs user in 
 router.post('/login', async (req, res, next) => {
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     const { email, password } = req.body
     console.log(req.body)
+    if(!password || !email){
+        return res.status(400).send({ error: "Please fill out both fields" })
+    } 
     const user = await User.findByEmail(email)
     .then(async response => {
         const rightCredentials = await comparePass(password, response.password)
         if(!rightCredentials){
-            return res.status(400).send({ error: "Invalid credentials" })
+            return res.status(400).send({ error: "Username or Password is incorrect" })
         }
         //token expires in 3 days
-        const token = jwt.sign({ _id: response.email }, process.env.TOKEN, {
+        const token = jwt.sign({ _id: response.email }, process.env.TOKEN_SECRET, {
             expiresIn: 3 * 24 * 60 * 60
         })
-        //return res.status(200).json(response)
-        res.header('auth-token', token).send('User successfully logged in!');
+        res.header('auth-token', token);
+        res.status(200).send({ success: "User logged in successfully!" })
     })
     .catch(err => next(err));
 })

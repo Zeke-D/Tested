@@ -6,12 +6,13 @@
     let errorResult = '';
 
     async function postData () {
-		const res = await fetch('http://localhost:1337/API/v1/user/login', {
+		const res = await fetch('http://localhost:1337/API/v1/user/register', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
 			body: JSON.stringify({
 				email,
-				password
+                password,
+                
 			})
         })
         .then(async response => {
